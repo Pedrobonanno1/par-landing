@@ -133,6 +133,31 @@
     .option:hover { filter: brightness(1.08); }
   }
   .option.selected { border-color: rgba(239,71,111,0.95); background: rgba(239,71,111,0.95); }
+
+  .other-input { display: none; gap: 8px; margin: -4px 0 10px; }
+  .other-input input {
+    flex: 1;
+    min-width: 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .other-input input::placeholder { color: var(--text-dim); }
+  .other-input input:focus { outline: none; border-color: var(--accent-strong); }
+  .other-input .btn-confirm {
+    background: linear-gradient(135deg, var(--accent-strong), var(--gold));
+    color: #241019;
+    border: none;
+    padding: 0 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+  }
   .option.selected::after { content: "✓"; float: right; color: var(--gold); font-weight: 700; }
   .hint { font-size: 12px; color: var(--text-dim); margin: -8px 0 14px; }
 
@@ -238,7 +263,7 @@
   <div class="step active" data-step="1">
     <div class="kicker">Diagnóstico do casal · 60 segundos</div>
     <h1>O dinheiro está causando mais atrito do que deveria!</h1>
-    <p class="sub">Dinheiro é a principal causa de briga entre casais no Brasil. Não precisa continuar assim.</p>
+    <p class="sub">A questão financeira é a maior causa de brigas entre casais no Brasil. Não precisa continuar assim.</p>
     <div class="stats">
       <div class="stat"><b data-count="2" data-suffix="×" data-anim="pop">0×</b><span>Casais brigam por mês, em média</span></div>
       <div class="stat"><b data-count="73" data-suffix="%">0%</b><span>Não sabem quanto o outro gasta</span></div>
@@ -256,6 +281,11 @@
     <button class="option" onclick="selectProfile(this,'ninguem-sabe',3)">Ninguém sabe pra onde vai o dinheiro</button>
     <button class="option" onclick="selectProfile(this,'cada-um-seu',3)">Cada um cuida do seu, sem planos juntos</button>
     <button class="option" onclick="selectProfile(this,'ja-brigou',3)">Evitamos falar sobre dinheiro pra não brigar</button>
+    <button class="option" onclick="toggleOther(this)">Outro</button>
+    <div class="other-input">
+      <input type="text" placeholder="Como assim?" maxlength="120">
+      <button class="btn-confirm" onclick="submitOtherProfile(this,'cada-um-seu',3)">Confirmar</button>
+    </div>
   </div>
 
   <!-- Step 3: Q2 — Leftover money -->
@@ -266,6 +296,11 @@
     <button class="option" onclick="answer(this,{prontidao:-5},4)">Sobra pouco, sempre no aperto</button>
     <button class="option" onclick="answer(this,{prontidao:-15,transparencia:-5},4)">Não sobra nada</button>
     <button class="option" onclick="answer(this,{alinhamento:15,prontidao:10},4)">Sobra e já vai pra alguma meta</button>
+    <button class="option" onclick="toggleOther(this)">Outro</button>
+    <div class="other-input">
+      <input type="text" placeholder="Como assim?" maxlength="120">
+      <button class="btn-confirm" onclick="submitOther(this,4)">Confirmar</button>
+    </div>
   </div>
 
   <!-- Step 4: Q4 — Joint account? -->
@@ -275,13 +310,19 @@
     <button class="option" onclick="answer(this,{transparencia:20},5)">Sim, já dividimos tudo numa conta só</button>
     <button class="option" onclick="answer(this,{transparencia:10},5)">Só uma reserva pra viagem/emergência</button>
     <button class="option" onclick="answer(this,{},5)">Não, é tudo separado</button>
+    <button class="option" onclick="toggleOther(this)">Outro</button>
+    <div class="other-input">
+      <input type="text" placeholder="Como assim?" maxlength="120">
+      <button class="btn-confirm" onclick="submitOther(this,5)">Confirmar</button>
+    </div>
   </div>
 
   <!-- Step 5: Trust interstitial -->
   <div class="step" data-step="5">
     <div class="kicker">Vocês sabiam?</div>
     <h1>Clareza sobre o que é dos dois corta a briga por dinheiro pela metade</h1>
-    <p class="sub">Cada um continua com a parte que é só sua — o que é compartilhado, os dois enxergam. Faltam só 4 perguntas.</p>
+    <p class="sub">Cada um continua com a parte que é só sua — o que é compartilhado, os dois enxergam.</p>
+    <p class="sub">Faltam só 4 perguntas.</p>
     <div class="stats">
       <div class="stat"><b data-count="2" data-suffix="×" data-anim="pop">0×</b><span>Menos brigas com visão financeira em comum</span></div>
       <div class="stat"><b data-count="84" data-suffix="%">0%</b><span>Dizem que ajudou a decidirem juntos</span></div>
@@ -297,6 +338,11 @@
     <button class="option" onclick="answer(this,{alinhamento:-10},7)">Meu parceiro(a)</button>
     <button class="option" onclick="answer(this,{alinhamento:20},7)">Os dois juntos</button>
     <button class="option" onclick="answer(this,{prontidao:-10,transparencia:-5},7)">Ninguém, meio que acontece</button>
+    <button class="option" onclick="toggleOther(this)">Outro</button>
+    <div class="other-input">
+      <input type="text" placeholder="Como assim?" maxlength="120">
+      <button class="btn-confirm" onclick="submitOther(this,7)">Confirmar</button>
+    </div>
   </div>
 
   <!-- Step 7: Q5 — Reaction to unannounced spending -->
@@ -307,6 +353,11 @@
     <button class="option" onclick="answer(this,{prontidao:-10},8)">Fica um desconforto no ar, mesmo sem dizer nada</button>
     <button class="option" onclick="answer(this,{prontidao:-15,alinhamento:-10},8)">Gera uma briga na hora</button>
     <button class="option" onclick="answer(this,{transparencia:-15},8)">Só descobrimos bem depois</button>
+    <button class="option" onclick="toggleOther(this)">Outro</button>
+    <div class="other-input">
+      <input type="text" placeholder="Como assim?" maxlength="120">
+      <button class="btn-confirm" onclick="submitOther(this,8)">Confirmar</button>
+    </div>
   </div>
 
   <!-- Step 8: Q6 — Quality of money conversations -->
@@ -317,6 +368,11 @@
     <button class="option" onclick="answer(this,{alinhamento:-10},9)">São tensas, evitamos</button>
     <button class="option" onclick="answer(this,{alinhamento:5},9)">Acontecem, mas sem muito planejamento</button>
     <button class="option" onclick="answer(this,{alinhamento:20,transparencia:10},9)">São tranquilas e frequentes</button>
+    <button class="option" onclick="toggleOther(this)">Outro</button>
+    <div class="other-input">
+      <input type="text" placeholder="Como assim?" maxlength="120">
+      <button class="btn-confirm" onclick="submitOther(this,9)">Confirmar</button>
+    </div>
   </div>
 
   <!-- Step 9: Q7 — Big goals (multi-select) -->
@@ -417,6 +473,27 @@
   function answer(el, deltas, next) {
     Object.keys(deltas).forEach(dim => { state.scores[dim] += deltas[dim]; });
     markSelected(el);
+    goTo(next);
+  }
+
+  function toggleOther(btn) {
+    const wrap = btn.nextElementSibling;
+    const show = wrap.style.display !== 'flex';
+    wrap.style.display = show ? 'flex' : 'none';
+    if (show) wrap.querySelector('input').focus();
+  }
+
+  function submitOther(btn, next) {
+    const input = btn.previousElementSibling;
+    if (!input.value.trim()) { input.focus(); return; }
+    goTo(next);
+  }
+
+  function submitOtherProfile(btn, key, next) {
+    const input = btn.previousElementSibling;
+    if (!input.value.trim()) { input.focus(); return; }
+    state.profile = key;
+    state.scores = { ...PROFILES[key].base };
     goTo(next);
   }
 
