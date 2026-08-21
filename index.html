@@ -15,7 +15,7 @@
     --text-dim: #b8a7bb;
     --border: #382c40;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -501,6 +501,7 @@
   function goTo(step) {
     updateGoalMentions();
     renderResult();
+    if (document.activeElement) document.activeElement.blur();
     document.querySelector('.step.active').classList.remove('active');
     const nextEl = document.querySelector('[data-step="'+step+'"]');
     nextEl.classList.add('active');
