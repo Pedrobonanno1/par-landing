@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Par — Dinheiro a dois, sem briga</title>
+<style>
+  :root {
+    --bg: #1a1420;
+    --bg-card: #241b2c;
+    --accent: #e8a0a0;
+    --accent-strong: #d9738a;
+    --gold: #e0b96f;
+    --text: #f5eef2;
+    --text-dim: #b8a7bb;
+    --border: #382c40;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 50% -10%, #2c2033 0%, var(--bg) 55%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .phone {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 32px 24px 28px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+    position: relative;
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    margin-bottom: 20px;
+  }
+  .brand .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-strong), var(--gold));
+  }
+  .progress {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-strong), var(--gold));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 8%;
+  }
+  .step { display: none; flex: 1; flex-direction: column; animation: fadein 0.35s ease; }
+  .step.active { display: flex; }
+  @keyframes fadein { from { opacity:0; transform: translateY(6px);} to {opacity:1; transform:translateY(0);} }
+
+  .kicker {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 24px;
+    line-height: 1.3;
+    margin: 0 0 12px;
+    font-weight: 800;
+  }
+  .sub {
+    color: var(--text-dim);
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+  .stat b { display:block; font-size: 18px; color: var(--gold); }
+  .stat span { font-size: 11px; color: var(--text-dim); }
+
+  .option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 16px 18px;
+    border-radius: 14px;
+    font-size: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .option:hover { border-color: var(--accent-strong); background: rgba(217,115,138,0.08); }
+  .option.selected { border-color: var(--accent-strong); background: rgba(217,115,138,0.16); }
+  .option.selected::after { content: "✓"; float: right; color: var(--gold); font-weight: 700; }
+  .hint { font-size: 12px; color: var(--text-dim); margin: -8px 0 14px; }
+
+  .btn-primary {
+    margin-top: auto;
+    background: linear-gradient(135deg, var(--accent-strong), var(--gold));
+    color: #241019;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 15.5px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+  }
+  .btn-ghost {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 12px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .social-proof {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-top: 16px;
+  }
+
+  .loading-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; }
+  .spinner {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent-strong);
+    animation: spin 0.9s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result-badge {
+    align-self: flex-start;
+    background: rgba(224,185,111,0.12);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .bars { margin: 18px 0 20px; }
+  .bar-row { margin-bottom: 12px; }
+  .bar-label { display:flex; justify-content:space-between; font-size:12.5px; color: var(--text-dim); margin-bottom:5px;}
+  .bar-track { height: 8px; background: var(--border); border-radius: 6px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:6px; background: linear-gradient(90deg, var(--accent-strong), var(--gold)); }
+
+  .price-card {
+    border: 1px solid var(--gold);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin: 8px 0 18px;
+    background: rgba(224,185,111,0.05);
+  }
+  .price-card .old { text-decoration: line-through; color: var(--text-dim); font-size: 13px; }
+  .price-card .new { font-size: 32px; font-weight: 800; color: var(--gold); margin: 4px 0; }
+  .price-card .per { font-size: 12px; color: var(--text-dim); }
+  .feature-list { list-style:none; padding:0; margin: 0 0 20px; font-size: 13.5px; color: var(--text-dim); }
+  .feature-list li { padding: 7px 0; border-bottom: 1px solid var(--border); display:flex; gap:8px; }
+  .feature-list li:last-child { border-bottom:none; }
+  .feature-list b { color: var(--text); font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="brand"><span class="dot"></span> Par</div>
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- Step 1: Hook -->
+  <div class="step active" data-step="1">
+    <div class="kicker">Diagnóstico do casal · 60 segundos</div>
+    <h1>Quantas vezes vocês discutiram sobre dinheiro esse mês?</h1>
+    <p class="sub">Dinheiro é a causa nº1 de briga entre casais no Brasil. Não precisa continuar assim.</p>
+    <div class="stats">
+      <div class="stat"><b>2×</b><span>casais brigam por mês, em média</span></div>
+      <div class="stat"><b>73%</b><span>não sabem quanto o outro gasta</span></div>
+    </div>
+    <button class="btn-primary" onclick="goTo(2)">Fazer o diagnóstico do casal</button>
+    <div class="social-proof">+3.200 casais já fizeram esse diagnóstico</div>
+  </div>
+
+  <!-- Step 2: Q1 — Self identification (defines profile) -->
+  <div class="step" data-step="2">
+    <div class="kicker">Pergunta 1 de 7</div>
+    <h1>Qual desses é o seu casal hoje?</h1>
+    <p class="sub">Seja honesto — isso ajuda a montar o diagnóstico certo pra vocês.</p>
+    <button class="option" onclick="selectProfile(this,'gasta-guarda',3)">Um gasta, o outro guarda</button>
+    <button class="option" onclick="selectProfile(this,'ninguem-sabe',3)">Ninguém sabe pra onde vai o dinheiro</button>
+    <button class="option" onclick="selectProfile(this,'cada-um-seu',3)">Cada um cuida do seu, sem plano junto</button>
+    <button class="option" onclick="selectProfile(this,'ja-brigou',3)">Já brigamos feio por causa de dinheiro</button>
+  </div>
+
+  <!-- Step 3: Q2 — Leftover money -->
+  <div class="step" data-step="3">
+    <div class="kicker">Pergunta 2 de 7</div>
+    <h1>Depois de pagar as contas, sobra dinheiro no fim do mês?</h1>
+    <button class="option" onclick="answer(this,{transparencia:-10},4)">Sobra, mas a gente nem sabe quanto</button>
+    <button class="option" onclick="answer(this,{prontidao:-5},4)">Sobra pouco, sempre no aperto</button>
+    <button class="option" onclick="answer(this,{prontidao:-15,transparencia:-5},4)">Não sobra nada</button>
+    <button class="option" onclick="answer(this,{alinhamento:15,prontidao:10},4)">Sobra e já vai pra alguma meta</button>
+  </div>
+
+  <!-- Step 4: Q3 — Who decides day-to-day -->
+  <div class="step" data-step="4">
+    <div class="kicker">Pergunta 3 de 7</div>
+    <h1>Quem decide o dinheiro no dia a dia?</h1>
+    <button class="option" onclick="answer(this,{alinhamento:-10},5)">Eu</button>
+    <button class="option" onclick="answer(this,{alinhamento:-10},5)">Meu parceiro(a)</button>
+    <button class="option" onclick="answer(this,{alinhamento:20},5)">Os dois juntos</button>
+    <button class="option" onclick="answer(this,{prontidao:-10,transparencia:-5},5)">Ninguém, meio que acontece</button>
+  </div>
+
+  <!-- Step 5: Q4 — Joint account? -->
+  <div class="step" data-step="5">
+    <div class="kicker">Pergunta 4 de 7</div>
+    <h1>Vocês já têm alguma conta ou reserva em comum?</h1>
+    <button class="option" onclick="answer(this,{transparencia:20},6)">Sim, já dividimos tudo numa conta só</button>
+    <button class="option" onclick="answer(this,{transparencia:10},6)">Só uma reservinha pra viagem/emergência</button>
+    <button class="option" onclick="answer(this,{},6)">Não, é tudo separado</button>
+  </div>
+
+  <!-- Step 6: Trust interstitial -->
+  <div class="step" data-step="6">
+    <div class="kicker">Você sabia?</div>
+    <h1>Casais que veem os gastos um do outro brigam a metade das vezes por dinheiro</h1>
+    <p class="sub">Não é sobre controlar o outro — é sobre não ter surpresa no extrato do cartão. Faltam só 3 perguntas.</p>
+    <div class="stats">
+      <div class="stat"><b>2×</b><span>menos brigas com visão compartilhada</span></div>
+      <div class="stat"><b>84%</b><span>dizem que ajudou a decidir junto</span></div>
+    </div>
+    <button class="btn-primary" onclick="goTo(7)">Continuar</button>
+  </div>
+
+  <!-- Step 7: Q5 — Reaction to unannounced spending -->
+  <div class="step" data-step="7">
+    <div class="kicker">Pergunta 5 de 7</div>
+    <h1>Quando um de vocês gasta alto sem avisar, o que rola?</h1>
+    <button class="option" onclick="answer(this,{alinhamento:-5},8)">Nada, cada um faz o que quer com o próprio dinheiro</button>
+    <button class="option" onclick="answer(this,{prontidao:-10},8)">Vira climão, mesmo sem discussão</button>
+    <button class="option" onclick="answer(this,{prontidao:-15,alinhamento:-10},8)">Vira briga direto</button>
+    <button class="option" onclick="answer(this,{transparencia:-15},8)">Nem ficamos sabendo</button>
+  </div>
+
+  <!-- Step 8: Q6 — Quality of money conversations -->
+  <div class="step" data-step="8">
+    <div class="kicker">Pergunta 6 de 7</div>
+    <h1>Como vocês descreveriam as conversas sobre dinheiro?</h1>
+    <button class="option" onclick="answer(this,{transparencia:-15,alinhamento:-10},9)">Não existem</button>
+    <button class="option" onclick="answer(this,{alinhamento:-10},9)">São tensas, evitamos</button>
+    <button class="option" onclick="answer(this,{alinhamento:5},9)">Rolam, mas sem muito plano</button>
+    <button class="option" onclick="answer(this,{alinhamento:20,transparencia:10},9)">São tranquilas e frequentes</button>
+  </div>
+
+  <!-- Step 9: Q7 — Big goals (multi-select) -->
+  <div class="step" data-step="9">
+    <div class="kicker">Pergunta 7 de 7</div>
+    <h1>Quais decisões grandes estão no horizonte de vocês?</h1>
+    <div class="hint">Pode marcar mais de uma opção</div>
+    <button class="option" data-goal="Morar juntos" onclick="toggleGoal(this)">Morar juntos</button>
+    <button class="option" data-goal="Casar" onclick="toggleGoal(this)">Casar</button>
+    <button class="option" data-goal="Comprar a casa própria" onclick="toggleGoal(this)">Comprar a casa própria</button>
+    <button class="option" data-goal="Ter um filho" onclick="toggleGoal(this)">Ter um filho</button>
+    <button class="option" data-goal="Nenhuma por enquanto" onclick="toggleGoal(this, true)">Nenhuma por enquanto</button>
+    <button class="btn-primary" style="margin-top:8px;" onclick="goTo(10)">Continuar</button>
+  </div>
+
+  <!-- Step 10: Loading -->
+  <div class="step" data-step="10">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <h1 style="font-size:18px;">Montando o diagnóstico do casal de vocês...</h1>
+      <p class="sub">Cruzando as 7 respostas com o perfil de +3.200 casais.</p>
+    </div>
+  </div>
+
+  <!-- Step 11: Result (dynamic profile) -->
+  <div class="step" data-step="11">
+    <div class="result-badge">SEU PERFIL DE CASAL</div>
+    <h1 id="resultTitle">Vocês são o time "..."</h1>
+    <p class="sub" id="resultDesc"></p>
+    <p class="sub" style="margin-top:-14px;">Sem visão em comum, fica mais difícil decidir com confiança em <span id="goalMentionResult">decisões grandes</span>.</p>
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-label"><span>Transparência</span><span id="barTransparenciaPct">–</span></div>
+        <div class="bar-track"><div class="bar-fill" id="barTransparenciaFill" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Alinhamento de metas</span><span id="barAlinhamentoPct">–</span></div>
+        <div class="bar-track"><div class="bar-fill" id="barAlinhamentoFill" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Prontidão pra decisão</span><span id="barProntidaoPct">–</span></div>
+        <div class="bar-track"><div class="bar-fill" id="barProntidaoFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goTo(12)">Ver o plano pra vocês</button>
+  </div>
+
+  <!-- Step 12: Offer -->
+  <div class="step" data-step="12">
+    <div class="kicker">Plano Par</div>
+    <h1>Dinheiro a dois, sem depender de planilha nem de briga</h1>
+    <ul class="feature-list">
+      <li>💚 <div><b>Visão Nosso vs Meu</b> — contas dos dois conectadas, gasto compartilhado separado do individual, automático</div></li>
+      <li>🤝 <div><b>Cupido</b> — pauta semanal com 3 pontos pra conversar sobre dinheiro sem virar discussão</div></li>
+      <li>🎯 <div><b>Metas de casal</b> com progresso visível pros dois</div></li>
+      <li>📊 <div><b>Diagnóstico de Casal</b> completo (score em 5 dimensões + PDF)</div></li>
+      <li>🏡 <div><b>Simulador da Próxima Decisão</b> — <span id="goalMentionOffer">"dá pra comprar a casa/ter filho?"</span>, com os números reais de vocês</div></li>
+    </ul>
+    <div class="price-card">
+      <div class="old">R$ 597/ano</div>
+      <div class="new">R$ 397<span style="font-size:16px;">/ano</span></div>
+      <div class="per">pra vocês dois · menos de R$ 1,10 por dia</div>
+    </div>
+    <button class="btn-primary" onclick="alert('Aqui entraria o checkout (Asaas/Stripe) — isso é só o protótipo do funil.')">Quero começar com o Par</button>
+    <div class="social-proof">Garantia de 7 dias. Cancele quando quiser.</div>
+  </div>
+
+  <button class="btn-ghost" id="backBtn" onclick="goBack()" style="display:none;">← Voltar</button>
+</div>
+
+<script>
+  let current = 1;
+  const total = 12;
+  const history = [1];
+  let selectedGoals = [];
+
+  const PROFILES = {
+    'gasta-guarda': { name: 'O Freio e o Acelerador', desc: 'Um pisa no acelerador, o outro no freio — e no fim ninguém sabe se estão indo pro mesmo lugar.', base: { transparencia: 55, alinhamento: 30, prontidao: 45 } },
+    'ninguem-sabe': { name: 'Zona de Mistério', desc: 'O dinheiro entra, o dinheiro sai, e nenhum dos dois sabe direito pra onde foi.', base: { transparencia: 15, alinhamento: 25, prontidao: 30 } },
+    'cada-um-seu': { name: 'Cada um no Seu Quadrado', desc: 'Vocês cuidam bem da própria vida financeira — só que separado, sem um plano em comum.', base: { transparencia: 40, alinhamento: 20, prontidao: 35 } },
+    'ja-brigou': { name: 'Já Bateu de Frente', desc: 'Vocês já sentiram o quanto dinheiro pode doer numa relação — a boa notícia é que dá pra virar esse jogo.', base: { transparencia: 35, alinhamento: 30, prontidao: 50 } }
+  };
+
+  let state = { profile: 'cada-um-seu', scores: { ...PROFILES['cada-um-seu'].base } };
+
+  function markSelected(el) {
+    el.parentElement.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function selectProfile(el, key, next) {
+    state.profile = key;
+    state.scores = { ...PROFILES[key].base };
+    markSelected(el);
+    goTo(next);
+  }
+
+  function answer(el, deltas, next) {
+    Object.keys(deltas).forEach(dim => { state.scores[dim] += deltas[dim]; });
+    markSelected(el);
+    goTo(next);
+  }
+
+  function toggleGoal(el, exclusive) {
+    const goal = el.dataset.goal;
+    const noneBtn = document.querySelector('[data-step="9"] .option[data-goal="Nenhuma por enquanto"]');
+    if (exclusive) {
+      const wasSelected = selectedGoals.includes(goal);
+      document.querySelectorAll('[data-step="9"] .option').forEach(o => o.classList.remove('selected'));
+      selectedGoals = wasSelected ? [] : [goal];
+      if (!wasSelected) el.classList.add('selected');
+      return;
+    }
+    if (selectedGoals.includes('Nenhuma por enquanto')) {
+      selectedGoals = [];
+      noneBtn.classList.remove('selected');
+    }
+    if (selectedGoals.includes(goal)) {
+      selectedGoals = selectedGoals.filter(g => g !== goal);
+      el.classList.remove('selected');
+    } else {
+      selectedGoals.push(goal);
+      el.classList.add('selected');
+    }
+  }
+
+  function updateGoalMentions() {
+    const real = selectedGoals.filter(g => g !== 'Nenhuma por enquanto');
+    const resultEl = document.getElementById('goalMentionResult');
+    const offerEl = document.getElementById('goalMentionOffer');
+    if (real.length) {
+      resultEl.textContent = 'decisões como "' + real.join('" e "').toLowerCase() + '"';
+      offerEl.textContent = '"dá pra ' + real.join(' / ').toLowerCase() + '?"';
+    } else {
+      resultEl.textContent = 'a próxima decisão grande de vocês';
+      offerEl.textContent = '"dá pra comprar a casa/ter filho?"';
+    }
+  }
+
+  function clamp(v) { return Math.max(5, Math.min(95, Math.round(v))); }
+
+  function renderResult() {
+    const profile = PROFILES[state.profile] || PROFILES['cada-um-seu'];
+    document.getElementById('resultTitle').textContent = 'Vocês são o time "' + profile.name + '"';
+    document.getElementById('resultDesc').textContent = profile.desc;
+    [['transparencia','barTransparencia'],['alinhamento','barAlinhamento'],['prontidao','barProntidao']].forEach(([key, id]) => {
+      const val = clamp(state.scores[key]);
+      document.getElementById(id + 'Pct').textContent = val + '%';
+      document.getElementById(id + 'Fill').style.width = val + '%';
+    });
+  }
+
+  function goTo(step) {
+    updateGoalMentions();
+    renderResult();
+    document.querySelector('.step.active').classList.remove('active');
+    document.querySelector('[data-step="'+step+'"]').classList.add('active');
+    current = step;
+    history.push(step);
+    document.getElementById('progressFill').style.width = Math.min(100, (step/total)*100) + '%';
+    document.getElementById('backBtn').style.display = step > 1 ? 'block' : 'none';
+    if (step === 10) {
+      setTimeout(() => goTo(11), 1800);
+    }
+  }
+  function goBack() {
+    if (history.length > 1) {
+      history.pop();
+      const prev = history[history.length-1];
+      document.querySelector('.step.active').classList.remove('active');
+      document.querySelector('[data-step="'+prev+'"]').classList.add('active');
+      current = prev;
+      document.getElementById('progressFill').style.width = Math.min(100, (prev/total)*100) + '%';
+      document.getElementById('backBtn').style.display = prev > 1 ? 'block' : 'none';
+    }
+  }
+</script>
+
+</body>
+</html>
