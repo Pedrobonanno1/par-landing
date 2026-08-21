@@ -117,7 +117,9 @@
     cursor: pointer;
     transition: all 0.15s ease;
   }
-  .option:hover { border-color: var(--accent-strong); background: rgba(239,71,111,0.08); }
+  @media (hover: hover) and (pointer: fine) {
+    .option:hover { border-color: var(--accent-strong); background: rgba(239,71,111,0.08); }
+  }
   .option.selected { border-color: var(--accent-strong); background: rgba(239,71,111,0.16); }
   .option.selected::after { content: "✓"; float: right; color: var(--gold); font-weight: 700; }
   .hint { font-size: 12px; color: var(--text-dim); margin: -8px 0 14px; }
@@ -270,7 +272,7 @@
       <div class="stat"><b data-count="2" data-suffix="×" data-anim="pop">0×</b><span>menos brigas com visão financeira em comum</span></div>
       <div class="stat"><b data-count="84" data-suffix="%">0%</b><span>dizem que ajudou a decidirem juntos</span></div>
     </div>
-    <button class="btn-primary" onclick="goTo(6)">Continuar</button>
+    <button class="btn-primary btn-pulse" onclick="goTo(6)">Continuar</button>
   </div>
 
   <!-- Step 6: Q3 — Who decides day-to-day -->
@@ -345,7 +347,7 @@
         <div class="bar-track"><div class="bar-fill" id="barProntidaoFill" style="width:0%"></div></div>
       </div>
     </div>
-    <button class="btn-primary" onclick="goTo(12)">Ver o plano pra vocês</button>
+    <button class="btn-primary btn-pulse" onclick="goTo(12)">Ver o plano pra vocês</button>
   </div>
 
   <!-- Step 12: Offer -->
@@ -364,7 +366,7 @@
       <div class="new">R$ 397<span style="font-size:16px;">/ano</span></div>
       <div class="per">pra vocês dois · menos de R$ 1,10 por dia</div>
     </div>
-    <button class="btn-primary" onclick="alert('Aqui entraria o checkout (Asaas/Stripe) — isso é só o protótipo do funil.')">Quero começar com o Par</button>
+    <button class="btn-primary btn-pulse" onclick="alert('Aqui entraria o checkout (Asaas/Stripe) — isso é só o protótipo do funil.')">Quero começar com o Par</button>
     <div class="social-proof">Testem 7 dias sem risco — devolvemos 100% se não for pra vocês.</div>
   </div>
 
